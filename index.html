@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Claudia">
+<meta name="theme-color" content="#5F27CD">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<title>¡Hola Claudia!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Quicksand',sans-serif;background:#FDF6FF;}
+
+:root{
+  --p1:#FF6B6B;--p1d:#CC4444;--p1l:#FFE8E8;
+  --p2:#FF9F43;--p2d:#CC7A22;--p2l:#FFF3E0;
+  --p3:#48DBFB;--p3d:#20A8C5;--p3l:#E0F9FF;
+  --p4:#1DD1A1;--p4d:#0FAB80;--p4l:#E0FFF7;
+  --p5:#5F27CD;--p5d:#3D1A8A;--p5l:#EDE7FF;
+  --p6:#FF9FF3;--p6d:#CC6DC0;--p6l:#FFE8FD;
+  --gold:#FFD700;--goldd:#B8960A;
+  --bg:#FDF6FF;--white:#FFFFFF;--text:#2C2C54;--muted:#9B9BC0;
+  --radius:24px;--radius-sm:16px;
+}
+
+/* SCREENS */
+.screen{display:none;position:fixed;top:0;left:0;width:100%;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 16px 40px;}
+.screen.active{display:flex;flex-direction:column;align-items:center;}
+
+/* ===== HOME ===== */
+#home{background:linear-gradient(160deg,#FDF6FF 0%,#F0E6FF 50%,#E6F0FF 100%);justify-content:center;}
+.home-deco{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;z-index:0;}
+.bubble{position:absolute;border-radius:50%;opacity:0.12;animation:floatUp linear infinite;}
+@keyframes floatUp{0%{transform:translateY(110vh) scale(0.5);}100%{transform:translateY(-20vh) scale(1.2);}}
+.home-inner{position:relative;z-index:1;text-align:center;width:100%;max-width:560px;padding:10px;}
+.claudia-star{font-size:80px;display:block;animation:starSpin 4s ease-in-out infinite;line-height:1.2;}
+@keyframes starSpin{0%,100%{transform:rotate(-8deg) scale(1);}50%{transform:rotate(8deg) scale(1.08);}}
+.app-name{font-family:'Baloo 2',cursive;font-size:44px;font-weight:900;background:linear-gradient(135deg,#5F27CD,#FF6B9D,#FF9F43);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;margin:6px 0 2px;}
+.app-tagline{font-size:17px;color:var(--muted);font-weight:600;margin-bottom:20px;}
+.streak-badge{background:white;border-radius:50px;padding:10px 22px;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.08);margin-bottom:18px;}
+.streak-num{font-family:'Baloo 2',cursive;font-size:28px;font-weight:800;color:var(--p2);}
+.streak-label{font-size:14px;color:var(--muted);font-weight:600;}
+.level-path{display:flex;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;margin:0 0 24px;}
+.lp-node{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',cursive;font-weight:800;font-size:18px;color:white;transition:transform 0.2s;flex-shrink:0;}
+.lp-node.done{background:var(--p4);box-shadow:0 5px 0 var(--p4d);}
+.lp-node.active{background:var(--p5);box-shadow:0 5px 0 var(--p5d);animation:nodePulse 1.8s ease-in-out infinite;}
+.lp-node.locked{background:#DDD;box-shadow:0 5px 0 #BBB;color:#AAA;font-size:20px;}
+.lp-arrow{color:#CCC;font-size:16px;}
+@keyframes nodePulse{0%,100%{transform:scale(1);}50%{transform:scale(1.12);}}
+.btn-start{background:linear-gradient(135deg,#5F27CD,#8B5CF6);color:white;border:none;padding:20px 52px;border-radius:50px;font-family:'Baloo 2',cursive;font-size:26px;font-weight:800;cursor:pointer;box-shadow:0 8px 0 var(--p5d),0 12px 32px rgba(95,39,205,0.35);transition:all 0.15s;width:100%;max-width:340px;display:block;margin:0 auto;}
+.btn-start:active{transform:translateY(5px);box-shadow:0 3px 0 var(--p5d);}
+.btn-config{background:none;border:2px solid #DDD;color:var(--muted);padding:12px 28px;border-radius:50px;font-family:'Quicksand',sans-serif;font-size:16px;font-weight:700;cursor:pointer;margin-top:14px;transition:all 0.2s;display:block;margin:14px auto 0;}
+
+/* ===== EXERCISES ===== */
+#exercises{background:linear-gradient(160deg,#E6F0FF,#F0FFF9);}
+.session-top{width:100%;max-width:560px;text-align:center;margin-bottom:12px;}
+.session-phase{font-family:'Baloo 2',cursive;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:3px;color:var(--muted);margin-bottom:2px;}
+.session-title{font-family:'Baloo 2',cursive;font-size:28px;font-weight:800;color:var(--text);}
+.prog-wrap{width:100%;max-width:560px;background:#E8E0FF;border-radius:50px;height:14px;margin:10px 0;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--p4),var(--p5));border-radius:50px;transition:width 0.6s cubic-bezier(0.34,1.56,0.64,1);}
+.timer-box{background:white;border-radius:50px;padding:10px 22px;display:inline-flex;align-items:center;gap:10px;box-shadow:0 4px 16px rgba(0,0,0,0.08);margin:10px 0;}
+.timer-circle{position:relative;width:48px;height:48px;}
+.timer-circle svg{transform:rotate(-90deg);}
+.timer-num{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Baloo 2',cursive;font-size:16px;font-weight:800;color:var(--p5);}
+.timer-label{font-size:15px;font-weight:700;color:var(--muted);}
+.ex-card{background:white;border-radius:var(--radius);padding:24px 20px;width:100%;max-width:560px;text-align:center;box-shadow:0 8px 40px rgba(95,39,205,0.1);border:3px solid #F0E6FF;}
+.ex-emoji{font-size:72px;margin-bottom:10px;display:block;animation:exBounce 2s ease-in-out infinite;}
+@keyframes exBounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+.ex-name{font-family:'Baloo 2',cursive;font-size:26px;font-weight:800;color:var(--text);margin-bottom:4px;}
+.ex-desc{font-size:15px;color:var(--muted);font-weight:600;margin-bottom:16px;line-height:1.5;}
+.ex-reps-box{background:var(--p5l);border-radius:var(--radius-sm);padding:14px 20px;margin-bottom:18px;}
+.ex-reps{font-family:'Baloo 2',cursive;font-size:52px;font-weight:900;color:var(--p5);line-height:1;}
+.ex-reps-unit{font-size:15px;color:var(--muted);font-weight:700;}
+.ex-instruct{font-size:14px;color:var(--p5d);font-weight:700;margin-top:4px;}
+.btn-listo{background:linear-gradient(135deg,var(--p4),#26de81);color:white;border:none;padding:18px;border-radius:var(--radius-sm);font-family:'Baloo 2',cursive;font-size:22px;font-weight:800;cursor:pointer;box-shadow:0 6px 0 var(--p4d);width:100%;transition:all 0.15s;}
+.btn-listo:active{transform:translateY(4px);box-shadow:0 2px 0 var(--p4d);}
+
+/* ===== PHONEME ===== */
+#phoneme{background:linear-gradient(160deg,#FFF6F0,#F0E6FF);}
+.ph-top{width:100%;max-width:560px;text-align:center;margin-bottom:10px;}
+.ph-level-tag{display:inline-block;padding:6px 18px;border-radius:50px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;}
+.ph-nav{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:8px 0;}
+.ph-nav-btn{min-width:44px;height:44px;padding:0 10px;border-radius:50px;border:2.5px solid #E0D0FF;background:white;font-family:'Baloo 2',cursive;font-size:15px;font-weight:700;color:var(--p5);cursor:pointer;transition:all 0.2s;}
+.ph-nav-btn.done{background:var(--p4);border-color:var(--p4d);color:white;}
+.ph-nav-btn.active{background:var(--p5);border-color:var(--p5d);color:white;transform:scale(1.1);}
+.ph-card{background:white;border-radius:var(--radius);padding:20px 18px;width:100%;max-width:560px;box-shadow:0 8px 40px rgba(95,39,205,0.1);border:3px solid #F0E6FF;}
+.ph-big{font-family:'Baloo 2',cursive;font-size:88px;font-weight:900;line-height:1;margin:6px 0;animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes popIn{0%{transform:scale(0.3);opacity:0;}70%{transform:scale(1.15);}100%{transform:scale(1);opacity:1;}}
+.ph-sublabel{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:10px;}
+.video-area{background:#F8F0FF;border-radius:var(--radius-sm);overflow:hidden;margin:10px 0;min-height:140px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;}
+.video-area video{width:100%;border-radius:var(--radius-sm);max-height:200px;object-fit:cover;}
+.video-area audio{width:100%;}
+.video-placeholder{text-align:center;padding:20px;}
+.video-placeholder p{font-size:13px;color:var(--muted);font-weight:600;margin-top:6px;}
+.btn-load-video{background:var(--p5);color:white;border:none;padding:10px 22px;border-radius:50px;font-family:'Quicksand',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;}
+.feedback-row{display:flex;gap:10px;margin-top:14px;}
+.btn-bien{flex:1;background:linear-gradient(135deg,var(--p4),#26de81);color:white;border:none;padding:18px 10px;border-radius:var(--radius-sm);font-family:'Baloo 2',cursive;font-size:20px;font-weight:800;cursor:pointer;box-shadow:0 6px 0 var(--p4d);transition:all 0.15s;}
+.btn-bien:active{transform:translateY(4px);box-shadow:0 2px 0 var(--p4d);}
+.btn-repetir{flex:1;background:linear-gradient(135deg,#FFD166,#FFAB00);color:#7A4F00;border:none;padding:18px 10px;border-radius:var(--radius-sm);font-family:'Baloo 2',cursive;font-size:20px;font-weight:800;cursor:pointer;box-shadow:0 6px 0 #B8880A;transition:all 0.15s;}
+.btn-repetir:active{transform:translateY(4px);box-shadow:0 2px 0 #B8880A;}
+.attempts-dots{display:flex;gap:8px;justify-content:center;margin-top:12px;}
+.adot{width:16px;height:16px;border-radius:50%;background:#EEE;transition:all 0.3s;}
+.adot.good{background:var(--p4);transform:scale(1.2);}
+.adot.repeat{background:#FFD166;}
+
+/* TRANSITION OVERLAY */
+.transition-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#5F27CD,#FF6B9D);z-index:500;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:40px;}
+.transition-overlay.show{display:flex;}
+.trans-emoji{font-size:80px;animation:transB 0.6s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes transB{0%{transform:scale(0);}100%{transform:scale(1);}}
+.trans-title{font-family:'Baloo 2',cursive;font-size:38px;font-weight:900;color:white;margin:14px 0 6px;}
+.trans-sub{font-size:19px;color:rgba(255,255,255,0.85);font-weight:600;}
+.trans-video-wrap{background:rgba(255,255,255,0.15);border-radius:var(--radius);padding:12px;margin:18px 0;width:100%;max-width:400px;}
+.trans-video-wrap video{width:100%;border-radius:var(--radius-sm);}
+.btn-trans-skip{background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.4);color:white;padding:12px 28px;border-radius:50px;font-family:'Quicksand',sans-serif;font-size:16px;font-weight:700;cursor:pointer;margin-top:12px;}
+
+/* ===== CELEBRATION ===== */
+#celebration{background:linear-gradient(160deg,#FFF9E6,#FFF0F9,#E6FFFA);justify-content:center;}
+canvas#confetti{position:fixed;top:0;left:0;pointer-events:none;z-index:0;}
+.celeb-inner{position:relative;z-index:1;text-align:center;max-width:520px;width:100%;padding:20px;}
+.celeb-emoji{font-size:80px;animation:celebSpin 0.8s cubic-bezier(0.34,1.56,0.64,1);display:block;}
+@keyframes celebSpin{0%{transform:scale(0) rotate(-20deg);}100%{transform:scale(1) rotate(0deg);}}
+.celeb-title{font-family:'Baloo 2',cursive;font-size:38px;font-weight:900;background:linear-gradient(135deg,#5F27CD,#FF6B9D);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:10px 0 4px;}
+.celeb-msg{font-size:18px;color:var(--muted);font-weight:700;margin-bottom:20px;}
+.stars-row{display:flex;gap:12px;justify-content:center;margin:14px 0;}
+.star-anim{font-size:48px;opacity:0;animation:starPop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;}
+@keyframes starPop{0%{transform:scale(0);opacity:0;}100%{transform:scale(1);opacity:1;}}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0;}
+.stat-box{background:white;border-radius:var(--radius-sm);padding:16px 8px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.06);}
+.stat-n{font-family:'Baloo 2',cursive;font-size:34px;font-weight:900;color:var(--p5);}
+.stat-l{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+.btn-home{background:linear-gradient(135deg,#5F27CD,#8B5CF6);color:white;border:none;padding:18px 48px;border-radius:50px;font-family:'Baloo 2',cursive;font-size:22px;font-weight:800;cursor:pointer;box-shadow:0 8px 0 var(--p5d);transition:all 0.15s;width:100%;}
+.btn-home:active{transform:translateY(5px);box-shadow:0 3px 0 var(--p5d);}
+
+/* ===== ADMIN ===== */
+#admin{background:#F8F4FF;align-items:stretch;padding-bottom:60px;}
+.admin-wrap{width:100%;max-width:540px;margin:0 auto;}
+.admin-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-top:4px;}
+.btn-back{background:white;border:none;width:44px;height:44px;border-radius:50%;font-size:20px;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,0.08);flex-shrink:0;}
+.admin-title{font-family:'Baloo 2',cursive;font-size:26px;font-weight:800;color:var(--text);}
+.admin-section{background:white;border-radius:var(--radius);padding:18px;margin-bottom:14px;box-shadow:0 4px 20px rgba(0,0,0,0.05);}
+.admin-section-title{font-family:'Baloo 2',cursive;font-size:17px;font-weight:800;color:var(--text);margin-bottom:12px;}
+.level-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:2px solid #F5F0FF;}
+.level-row:last-child{border-bottom:none;}
+.lr-name{font-weight:700;color:var(--text);font-size:15px;}
+.lr-status{font-size:12px;color:var(--muted);margin-top:2px;}
+.toggle-level{padding:8px 16px;border-radius:50px;border:none;font-family:'Quicksand',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.toggle-level.on{background:var(--p4l);color:var(--p4d);}
+.toggle-level.off{background:#F0F0F0;color:var(--muted);}
+.load-videos-btn{background:linear-gradient(135deg,var(--p5),#8B5CF6);color:white;border:none;padding:16px;border-radius:var(--radius-sm);font-family:'Baloo 2',cursive;font-size:18px;font-weight:800;cursor:pointer;width:100%;box-shadow:0 5px 0 var(--p5d);transition:all 0.15s;margin-bottom:10px;}
+.load-videos-btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--p5d);}
+.load-status{font-size:13px;color:var(--muted);font-weight:600;text-align:center;padding:6px;line-height:1.5;}
+.ph-badge{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:50px;font-size:13px;font-weight:700;margin:3px;}
+.ph-badge.mastered{background:var(--p4l);color:var(--p4d);}
+.ph-badge.learning{background:var(--p2l);color:var(--p2d);}
+.ph-badge.pending{background:#F0F0F0;color:var(--muted);}
+.reset-btn{background:none;border:2px solid #EEE;color:var(--muted);padding:10px 20px;border-radius:50px;font-family:'Quicksand',sans-serif;font-size:14px;font-weight:600;cursor:pointer;width:100%;margin-top:10px;}
+.db-status{font-size:13px;padding:8px 12px;border-radius:var(--radius-sm);font-weight:600;margin-bottom:10px;text-align:center;}
+.db-status.ok{background:var(--p4l);color:var(--p4d);}
+.db-status.empty{background:var(--p2l);color:var(--p2d);}
+input[type=file]{display:none;}
+</style>
+</head>
+<body>
+
+<div class="home-deco" id="bubbles"></div>
+
+<!-- TRANSITION OVERLAY -->
+<div class="transition-overlay" id="transOverlay">
+  <div class="trans-emoji" id="transEmoji">🎉</div>
+  <div class="trans-title" id="transTitle">¡Muy bien!</div>
+  <div class="trans-sub" id="transSub">Ahora vamos con la M</div>
+  <div class="trans-video-wrap" id="transVideoWrap" style="display:none">
+    <video id="transVideo" playsinline webkit-playsinline></video>
+  </div>
+  <button class="btn-trans-skip" onclick="finishTransition()">Continuar →</button>
+</div>
+
+<!-- HOME -->
+<div id="home" class="screen active">
+  <div class="home-inner">
+    <span class="claudia-star" id="homeEmoji">🌟</span>
+    <div class="app-name">¡Hola, Claudia!</div>
+    <div class="app-tagline">Tu aventura de palabras</div>
+    <div class="streak-badge">
+      <span class="streak-num" id="streakNum">0</span>
+      <span class="streak-label">días seguidos 🔥</span>
+    </div>
+    <div class="level-path" id="levelPath"></div>
+    <button class="btn-start" onclick="startSession()">¡Empezar! ✨</button>
+    <button class="btn-config" onclick="goAdmin()">⚙️ Panel de mamá y papá</button>
+  </div>
+</div>
+
+<!-- EXERCISES -->
+<div id="exercises" class="screen">
+  <div class="session-top">
+    <div class="session-phase">Calentamiento</div>
+    <div class="session-title" id="exTitle">Calentamos la boca 🐸</div>
+  </div>
+  <div class="prog-wrap"><div class="prog-fill" id="exProg" style="width:0%"></div></div>
+  <div class="timer-box">
+    <div class="timer-circle">
+      <svg width="48" height="48" viewBox="0 0 48 48">
+        <circle cx="24" cy="24" r="20" fill="none" stroke="#EEE" stroke-width="5"/>
+        <circle cx="24" cy="24" r="20" fill="none" stroke="#5F27CD" stroke-width="5"
+          stroke-linecap="round" stroke-dasharray="125.6" id="timerArc" stroke-dashoffset="0"/>
+      </svg>
+      <div class="timer-num" id="timerNum">30</div>
+    </div>
+    <div class="timer-label">segundos</div>
+  </div>
+  <div class="ex-card">
+    <span class="ex-emoji" id="exEmoji">🦁</span>
+    <div class="ex-name" id="exName">Ejercicio</div>
+    <div class="ex-desc" id="exDesc">Descripción</div>
+    <div class="ex-reps-box">
+      <div class="ex-reps" id="exReps">5</div>
+      <div class="ex-reps-unit">veces</div>
+      <div class="ex-instruct" id="exInstruct">Instrucción</div>
+    </div>
+    <button class="btn-listo" onclick="nextExercise()">¡Listo! →</button>
+  </div>
+</div>
+
+<!-- PHONEME -->
+<div id="phoneme" class="screen">
+  <div class="ph-top">
+    <div class="ph-level-tag" id="phLevelTag">Nivel 1 · La P</div>
+    <div class="prog-wrap"><div class="prog-fill" id="phProg" style="width:0%"></div></div>
+    <div class="ph-nav" id="phNav"></div>
+  </div>
+  <div class="ph-card">
+    <div class="ph-sublabel" id="phSublabel">Escucha y repite</div>
+    <div class="ph-big" id="phBig">PA</div>
+    <div class="video-area" id="videoArea">
+      <div class="video-placeholder">
+        <div style="font-size:40px;">🎬</div>
+        <p>Vídeo no cargado aún</p>
+        <button class="btn-load-video" onclick="goAdmin()">Cargar vídeos en ajustes</button>
+      </div>
+    </div>
+    <div class="feedback-row">
+      <button class="btn-bien" onclick="markGood()">✅ ¡Lo hice!</button>
+      <button class="btn-repetir" onclick="markRepeat()">🔄 Repetir</button>
+    </div>
+    <div class="attempts-dots" id="attemptsDots"></div>
+  </div>
+</div>
+
+<!-- CELEBRATION -->
+<div id="celebration" class="screen">
+  <canvas id="confetti"></canvas>
+  <div class="celeb-inner">
+    <span class="celeb-emoji" id="celebEmoji">🏆</span>
+    <div class="celeb-title" id="celebTitle">¡Increíble!</div>
+    <div class="celeb-msg" id="celebMsg">Has completado la sesión de hoy</div>
+    <div class="stars-row" id="starsRow"></div>
+    <div class="stats-grid" id="statsGrid"></div>
+    <button class="btn-home" onclick="goHome()">¡Hasta mañana! 🌙</button>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="admin" class="screen">
+  <div class="admin-wrap">
+    <div class="admin-header">
+      <button class="btn-back" onclick="goHome()">←</button>
+      <div class="admin-title">⚙️ Panel de mamá y papá</div>
+    </div>
+
+    <div class="admin-section">
+      <div class="admin-section-title">📁 Vídeos guardados</div>
+      <div class="db-status" id="dbStatus">Comprobando...</div>
+      <button class="load-videos-btn" onclick="document.getElementById('folderInput').click()">
+        📂 Cargar / actualizar vídeos
+      </button>
+      <input type="file" id="folderInput" multiple accept="video/*,audio/*" onchange="loadVideos(this)">
+      <div class="load-status" id="loadStatus">Selecciona todos los archivos de la carpeta claudia_fonemas a la vez</div>
+    </div>
+
+    <div class="admin-section">
+      <div class="admin-section-title">🔓 Niveles</div>
+      <div id="levelGrid"></div>
+    </div>
+
+    <div class="admin-section">
+      <div class="admin-section-title">📊 Progreso de Claudia</div>
+      <div id="progressBadges"></div>
+    </div>
+
+    <div class="admin-section">
+      <div class="admin-section-title">📅 Estadísticas</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div class="stat-box"><div class="stat-n" id="adminSessions">0</div><div class="stat-l">Sesiones</div></div>
+        <div class="stat-box"><div class="stat-n" id="adminStreak">0</div><div class="stat-l">Racha 🔥</div></div>
+      </div>
+      <button class="reset-btn" onclick="confirmReset()">🗑 Reiniciar progreso</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// ESTRUCTURA DE NIVELES Y EJERCICIOS
+// ============================================================
+const LEVELS = [
+  {
+    id:1, name:"Nivel 1", consonant:"P", color:"#FF6B6B", colorD:"#CC4444", colorL:"#FFE8E8", emoji:"👄",
+    clips:[
+      {key:"PA_pato",   label:"PA",    word:"pato"},
+      {key:"PE_pelo",   label:"PE",    word:"pelo"},
+      {key:"PI_pie",    label:"PI",    word:"pie"},
+      {key:"PO_polo",   label:"PO",    word:"polo"},
+      {key:"PU_puerta", label:"PU",    word:"puerta"},
+      {key:"P_frase",   label:"Frase", word:"Pepe pone pan en el plato", isFrase:true},
+    ],
+    transition:{key:"transicion_M", toName:"la M", emoji:"🎊"}
+  },
+  {
+    id:2, name:"Nivel 2", consonant:"M", color:"#FF9F43", colorD:"#CC7A22", colorL:"#FFF3E0", emoji:"👅",
+    clips:[
+      {key:"MA_mama",  label:"MA", word:"mamá"},
+      {key:"ME_mesa",  label:"ME", word:"mesa"},
+      {key:"MI_mio",   label:"MI", word:"mío"},
+      {key:"MO_mono",  label:"MO", word:"mono"},
+      {key:"MU_mula",  label:"MU", word:"mula"},
+      {key:"M_frase",  label:"Frase", word:"Emi me mima más a mí", isFrase:true},
+    ],
+    transition:{key:"transicion_B", toName:"la B", emoji:"🌟"}
+  },
+  {
+    id:3, name:"Nivel 3", consonant:"B", color:"#48DBFB", colorD:"#20A8C5", colorL:"#E0F9FF", emoji:"💋",
+    clips:[
+      {key:"BA_bata",  label:"BA", word:"bata"},
+      {key:"BE_beso",  label:"BE", word:"beso"},
+      {key:"BI_bien",  label:"BI", word:"bien"},
+      {key:"BO_bola",  label:"BO", word:"bola"},
+      {key:"BU_bueno", label:"BU", word:"bueno"},
+      {key:"B_frase",  label:"Frase", word:"Bea bebe batido de bombón", isFrase:true},
+    ],
+    transition:{key:"transicion_Z", toName:"la Z/C", emoji:"⭐"}
+  },
+  {
+    id:4, name:"Nivel 4", consonant:"Z/C", color:"#1DD1A1", colorD:"#0FAB80", colorL:"#E0FFF7", emoji:"🦋",
+    clips:[
+      {key:"ZA_zapato", label:"ZA", word:"zapato"},
+      {key:"CE_cena",   label:"CE", word:"cena"},
+      {key:"CI_cielo",  label:"CI", word:"cielo"},
+      {key:"ZO_zoo",    label:"ZO", word:"zoo"},
+      {key:"ZU_zumo",   label:"ZU", word:"zumo"},
+      {key:"Z_frase",   label:"Frase", word:"Celia tiene cien zapatos azules", isFrase:true},
+    ],
+    transition:{key:"transicion_S", toName:"la S", emoji:"🎉"}
+  },
+  {
+    id:5, name:"Nivel 5", consonant:"S directa", color:"#5F27CD", colorD:"#3D1A8A", colorL:"#EDE7FF", emoji:"🌈",
+    clips:[
+      {key:"SA_sapo",  label:"SA", word:"sapo"},
+      {key:"SE_seta",  label:"SE", word:"seta"},
+      {key:"SI_silla", label:"SI", word:"silla"},
+      {key:"SO_sopa",  label:"SO", word:"sopa"},
+      {key:"SU_suelo", label:"SU", word:"suelo"},
+      {key:"S_frase",  label:"Frase", word:"Susi sabe saltar sola", isFrase:true},
+    ],
+    transition:{key:"transicion_Sinv", toName:"la S inversa", emoji:"🏆"}
+  },
+  {
+    id:6, name:"Nivel 6", consonant:"S inversa", color:"#FF9FF3", colorD:"#CC6DC0", colorL:"#FFE8FD", emoji:"🎤",
+    clips:[
+      {key:"S_inv_mas",     label:"más",     word:"más"},
+      {key:"S_inv_mes",     label:"mes",     word:"mes"},
+      {key:"S_inv_isla",    label:"isla",    word:"isla"},
+      {key:"S_inv_tos",     label:"tos",     word:"tos"},
+      {key:"S_inv_autobus", label:"autobús", word:"autobús"},
+      {key:"S_inv_frase",   label:"Frase",   word:"La espada está en la isla", isFrase:true},
+    ],
+    transition:null
+  },
+];
+
+const EXERCISES_DB = [
+  [
+    {emoji:"🦁",name:"Boca de león",desc:"Abre la boca lo más grande que puedas",reps:5,instruct:"Abre, aguanta 2 segundos y cierra despacio",dur:30},
+    {emoji:"😚",name:"Besitos",desc:"Junta los labios para dar un beso",reps:8,instruct:"Aprieta los labios y suéltalos haciendo 'mua'",dur:25},
+    {emoji:"😜",name:"Lengua arriba y abajo",desc:"Saca la lengua y muévela arriba y abajo",reps:6,instruct:"Arriba, abajo, arriba, abajo... ¡como un perrito!",dur:30},
+    {emoji:"😬",name:"Sonrisa grande",desc:"Sonríe lo más grande que puedas",reps:5,instruct:"Sonríe y aguanta 3 segundos, luego relaja",dur:25},
+  ],
+  [
+    {emoji:"🎺",name:"Trompeta",desc:"Infla los mofletes y suelta el aire de golpe",reps:6,instruct:"Infla... aguanta... ¡PUM! Suelta el aire",dur:30},
+    {emoji:"👅",name:"Lengua al paladar",desc:"Toca el paladar con la punta de la lengua",reps:8,instruct:"Arriba, toca, baja... como un látigo suave",dur:30},
+    {emoji:"🌬️",name:"Soplidos",desc:"Sopla como si apagaras velas",reps:5,instruct:"Coge aire... y sopla muy fuerte ¡BUFF!",dur:25},
+    {emoji:"🐍",name:"Serpiente",desc:"Saca la lengua a los lados como una serpiente",reps:6,instruct:"Izquierda, derecha... ¡ssss!",dur:30},
+  ],
+  [
+    {emoji:"🐬",name:"Chasquido",desc:"Choca la lengua contra el paladar",reps:10,instruct:"Clic, clic, clic... ¡como los delfines!",dur:25},
+    {emoji:"🎵",name:"Vibrar labios",desc:"Cierra los labios y sopla para que vibren",reps:5,instruct:"BRRR... mantén los labios juntos y sopla fuerte",dur:30},
+    {emoji:"🔄",name:"Círculos de lengua",desc:"Mueve la lengua haciendo círculos por dentro",reps:4,instruct:"Por dentro de los dientes, despacito",dur:30},
+    {emoji:"💪",name:"Fuerte y suave",desc:"Di 'ba' muy fuerte, luego muy suavecito",reps:6,instruct:"FUERTE: BA... y suave: ba...",dur:25},
+  ],
+];
+
+// ============================================================
+// ESTADO Y PERSISTENCIA (localStorage)
+// ============================================================
+let S = {
+  sessions:0, streak:0, currentLevel:1,
+  unlockedLevels:[1], progress:{}, lastDate:null,
+};
+
+function loadState(){
+  try{const s=localStorage.getItem('claudia_v3');if(s)S=JSON.parse(s);}catch(e){}
+}
+function saveState(){
+  try{localStorage.setItem('claudia_v3',JSON.stringify(S));}catch(e){}
+}
+loadState();
+
+// ============================================================
+// INDEXEDDB — vídeos permanentes
+// ============================================================
+let db = null;
+const DB_NAME = 'ClaudiaVideos';
+const DB_VERSION = 1;
+const STORE = 'videos';
+
+function openDB(){
+  return new Promise((res,rej)=>{
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = e => e.target.result.createObjectStore(STORE, {keyPath:'key'});
+    req.onsuccess = e => { db = e.target.result; res(db); };
+    req.onerror = () => rej(req.error);
+  });
+}
+
+function saveVideoToDB(key, blob){
+  return new Promise((res,rej)=>{
+    const tx = db.transaction(STORE,'readwrite');
+    tx.objectStore(STORE).put({key, blob});
+    tx.oncomplete = res;
+    tx.onerror = ()=>rej(tx.error);
+  });
+}
+
+function getVideoFromDB(key){
+  return new Promise((res,rej)=>{
+    const tx = db.transaction(STORE,'readonly');
+    const req = tx.objectStore(STORE).get(key);
+    req.onsuccess = () => res(req.result ? req.result.blob : null);
+    req.onerror = ()=>rej(req.error);
+  });
+}
+
+function countVideosInDB(){
+  return new Promise((res,rej)=>{
+    const tx = db.transaction(STORE,'readonly');
+    const req = tx.objectStore(STORE).count();
+    req.onsuccess = () => res(req.result);
+    req.onerror = ()=>rej(req.error);
+  });
+}
+
+function clearDB(){
+  return new Promise((res,rej)=>{
+    const tx = db.transaction(STORE,'readwrite');
+    tx.objectStore(STORE).clear();
+    tx.oncomplete = res;
+    tx.onerror = ()=>rej(tx.error);
+  });
+}
+
+// Cache de URLs de objeto para esta sesión
+const videoURLCache = {};
+
+async function getVideoURL(key){
+  if(videoURLCache[key]) return videoURLCache[key];
+  const blob = await getVideoFromDB(key);
+  if(!blob) return null;
+  const url = URL.createObjectURL(blob);
+  videoURLCache[key] = url;
+  return url;
+}
+
+// ============================================================
+// BURBUJAS DECORATIVAS
+// ============================================================
+(function(){
+  const colors=['#FF6B6B','#FFD166','#1DD1A1','#5F27CD','#48DBFB','#FF9FF3'];
+  const wrap=document.getElementById('bubbles');
+  for(let i=0;i<18;i++){
+    const d=document.createElement('div');
+    d.className='bubble';
+    const size=30+Math.random()*60;
+    d.style.cssText=`width:${size}px;height:${size}px;left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${8+Math.random()*12}s;animation-delay:${-Math.random()*15}s;`;
+    wrap.appendChild(d);
+  }
+})();
+
+// ============================================================
+// NAVEGACIÓN
+// ============================================================
+function goScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function goHome(){
+  clearInterval(timerInt);
+  const emojis=['🌟','⭐','🦋','🌈','🎈','🐬','🦄','🌸'];
+  document.getElementById('homeEmoji').textContent=emojis[Math.floor(Math.random()*emojis.length)];
+  renderHome();
+  goScreen('home');
+}
+function goAdmin(){renderAdmin();goScreen('admin');}
+
+// ============================================================
+// HOME
+// ============================================================
+function renderHome(){
+  document.getElementById('streakNum').textContent=S.streak||0;
+  const path=document.getElementById('levelPath');
+  path.innerHTML='';
+  LEVELS.forEach((lv,i)=>{
+    const isUnlocked=S.unlockedLevels.includes(lv.id);
+    const isCurrent=lv.id===S.currentLevel;
+    const isDone=isUnlocked&&lv.id<S.currentLevel;
+    const node=document.createElement('div');
+    node.className=`lp-node ${isDone?'done':isCurrent?'active':'locked'}`;
+    node.style.background=isDone?'#1DD1A1':isCurrent?lv.color:'#DDD';
+    node.style.boxShadow=`0 5px 0 ${isDone?'#0FAB80':isCurrent?lv.colorD:'#BBB'}`;
+    node.innerHTML=isDone?'✓':isCurrent?lv.id:'🔒';
+    path.appendChild(node);
+    if(i<LEVELS.length-1){
+      const arr=document.createElement('div');
+      arr.className='lp-arrow';arr.textContent='→';
+      path.appendChild(arr);
+    }
+  });
+}
+
+// ============================================================
+// SESIÓN
+// ============================================================
+let sessionExIdx=0, sessionExercises=[];
+let sessionClips=[], sessionClipIdx=0;
+let timerInt=null, timerTotal=0, timerSecs=0;
+let goodTotal=0, attemptTotal=0;
+let currentLevel=null;
+
+function startSession(){
+  const today=new Date().toDateString();
+  if(S.lastDate!==today){
+    const yesterday=new Date(Date.now()-86400000).toDateString();
+    S.streak=(S.lastDate===yesterday)?(S.streak||0)+1:1;
+    S.lastDate=today;
+    S.sessions=(S.sessions||0)+1;
+    saveState();
+  }
+  goodTotal=0; attemptTotal=0;
+  const dayIdx=(S.sessions-1)%EXERCISES_DB.length;
+  sessionExercises=[...EXERCISES_DB[dayIdx]].sort(()=>Math.random()-0.5);
+  sessionExIdx=0;
+  currentLevel=LEVELS.find(l=>l.id===S.currentLevel)||LEVELS[0];
+  sessionClips=[...currentLevel.clips];
+  sessionClipIdx=0;
+  renderExercise();
+  goScreen('exercises');
+}
+
+// ============================================================
+// EJERCICIOS
+// ============================================================
+function renderExercise(){
+  const ex=sessionExercises[sessionExIdx];
+  const total=sessionExercises.length;
+  document.getElementById('exTitle').textContent=sessionExIdx===0?'Calentamos la boca 🐸':`Ejercicio ${sessionExIdx+1}`;
+  document.getElementById('exProg').style.width=`${(sessionExIdx/total)*100}%`;
+  document.getElementById('exEmoji').textContent=ex.emoji;
+  document.getElementById('exName').textContent=ex.name;
+  document.getElementById('exDesc').textContent=ex.desc;
+  document.getElementById('exReps').textContent=ex.reps;
+  document.getElementById('exInstruct').textContent=ex.instruct;
+  startTimer(ex.dur);
+}
+
+function startTimer(secs){
+  clearInterval(timerInt);
+  timerTotal=secs; timerSecs=secs;
+  const arc=document.getElementById('timerArc');
+  function tick(){
+    document.getElementById('timerNum').textContent=timerSecs;
+    arc.style.strokeDashoffset=125.6*(1-timerSecs/timerTotal);
+    if(timerSecs>0)timerSecs--; else clearInterval(timerInt);
+  }
+  tick();
+  timerInt=setInterval(tick,1000);
+}
+
+function nextExercise(){
+  clearInterval(timerInt);
+  sessionExIdx++;
+  if(sessionExIdx<sessionExercises.length){
+    renderExercise();
+  } else {
+    sessionClipIdx=0;
+    renderPhoneme();
+    goScreen('phoneme');
+  }
+}
+
+// ============================================================
+// FONEMAS
+// ============================================================
+async function renderPhoneme(){
+  if(sessionClipIdx>=sessionClips.length){
+    showCelebration(); return;
+  }
+  const clip=sessionClips[sessionClipIdx];
+  const lv=currentLevel;
+  const total=sessionClips.length;
+
+  const tag=document.getElementById('phLevelTag');
+  tag.textContent=`${lv.name} · La ${lv.consonant}`;
+  tag.style.background=lv.colorL;
+  tag.style.color=lv.colorD;
+
+  document.getElementById('phProg').style.width=`${(sessionClipIdx/total)*100}%`;
+  document.getElementById('phBig').textContent=clip.label;
+  document.getElementById('phBig').style.color=lv.color;
+  document.getElementById('phSublabel').textContent=clip.isFrase?`"${clip.word}"`:clip.word;
+
+  // Nav
+  const nav=document.getElementById('phNav');
+  nav.innerHTML='';
+  sessionClips.forEach((c,i)=>{
+    const b=document.createElement('button');
+    b.className=`ph-nav-btn ${i<sessionClipIdx?'done':i===sessionClipIdx?'active':''}`;
+    b.textContent=c.label;
+    b.onclick=()=>{sessionClipIdx=i;renderPhoneme();};
+    nav.appendChild(b);
+  });
+
+  // Vídeo desde IndexedDB
+  const va=document.getElementById('videoArea');
+  va.innerHTML='<div style="font-size:32px;animation:spin 1s linear infinite;display:inline-block;">⏳</div>';
+
+  const url=await getVideoURL(clip.key);
+  if(url){
+    const isAudio=videoURLCache[clip.key]&&!clip.key.includes('audio');
+    va.innerHTML=`<video src="${url}" controls playsinline webkit-playsinline autoplay style="width:100%;border-radius:14px;max-height:200px;" preload="auto"></video>`;
+  } else {
+    va.innerHTML=`<div class="video-placeholder"><div style="font-size:36px;">🎬</div><p>${clip.key}.mp4</p><button class="btn-load-video" onclick="goAdmin()">Cargar vídeos en ajustes</button></div>`;
+  }
+
+  // Puntos de intentos
+  if(!S.progress[clip.key]) S.progress[clip.key]={good:0,repeat:0,attempts:[]};
+  renderDots(clip.key);
+}
+
+function renderDots(key){
+  const p=S.progress[key]||{attempts:[]};
+  const row=document.getElementById('attemptsDots');
+  row.innerHTML='';
+  for(let i=0;i<5;i++){
+    const d=document.createElement('div');
+    d.className='adot'+(p.attempts[i]==='good'?' good':p.attempts[i]==='repeat'?' repeat':'');
+    row.appendChild(d);
+  }
+}
+
+function markGood(){
+  const clip=sessionClips[sessionClipIdx];
+  if(!S.progress[clip.key]) S.progress[clip.key]={good:0,repeat:0,attempts:[]};
+  S.progress[clip.key].attempts.push('good');
+  S.progress[clip.key].good++;
+  goodTotal++; attemptTotal++;
+  saveState();
+  renderDots(clip.key);
+  const goodCount=S.progress[clip.key].attempts.filter(a=>a==='good').length;
+  if(goodCount>=3){
+    setTimeout(()=>{
+      sessionClipIdx++;
+      if(sessionClipIdx>=sessionClips.length&&currentLevel.transition){
+        showTransition();
+      } else {
+        renderPhoneme();
+      }
+    },600);
+  }
+}
+
+function markRepeat(){
+  const clip=sessionClips[sessionClipIdx];
+  if(!S.progress[clip.key]) S.progress[clip.key]={good:0,repeat:0,attempts:[]};
+  S.progress[clip.key].attempts.push('repeat');
+  S.progress[clip.key].repeat++;
+  attemptTotal++;
+  saveState();
+  renderDots(clip.key);
+  const v=document.querySelector('#videoArea video');
+  if(v){v.currentTime=0;v.play();}
+}
+
+// ============================================================
+// TRANSICIÓN ENTRE NIVELES
+// ============================================================
+async function showTransition(){
+  const trans=currentLevel.transition;
+  if(!trans){showCelebration();return;}
+  document.getElementById('transEmoji').textContent=trans.emoji;
+  document.getElementById('transTitle').textContent='¡Nivel completado! 🎉';
+  document.getElementById('transSub').textContent=`Ahora vamos con ${trans.toName}`;
+
+  const vw=document.getElementById('transVideoWrap');
+  const tv=document.getElementById('transVideo');
+  const url=await getVideoURL(trans.key);
+  if(url){
+    tv.src=url;
+    vw.style.display='block';
+    tv.play();
+    tv.onended=()=>setTimeout(finishTransition,800);
+  } else {
+    vw.style.display='none';
+  }
+  document.getElementById('transOverlay').classList.add('show');
+}
+
+function finishTransition(){
+  document.getElementById('transOverlay').classList.remove('show');
+  const tv=document.getElementById('transVideo');
+  tv.pause();tv.src='';
+  showCelebration();
+}
+
+// ============================================================
+// CELEBRACIÓN
+// ============================================================
+function showCelebration(){
+  const pct=attemptTotal>0?Math.round((goodTotal/attemptTotal)*100):100;
+  const msgs=[
+    ["¡Eres una campeona! 🏆","Has trabajado súper bien hoy"],
+    ["¡Lo has hecho genial! ⭐","Tu boca es cada vez más fuerte"],
+    ["¡Qué orgullosa estoy de ti! 💖","Cada día lo haces mejor"],
+    ["¡Fantástica, Claudia! 🌈","Las palabras te quieren mucho"],
+    ["¡Increíble! 🦋","Eres más valiente cada día"],
+  ];
+  const m=msgs[Math.floor(Math.random()*msgs.length)];
+  document.getElementById('celebEmoji').textContent=pct>=80?'🏆':pct>=50?'⭐':'💪';
+  document.getElementById('celebTitle').textContent=m[0];
+  document.getElementById('celebMsg').textContent=m[1];
+  const stars=document.getElementById('starsRow');
+  stars.innerHTML='';
+  const n=pct>=80?3:pct>=50?2:1;
+  for(let i=0;i<n;i++){
+    const s=document.createElement('div');
+    s.className='star-anim';s.textContent='⭐';
+    s.style.animationDelay=`${i*0.2}s`;
+    stars.appendChild(s);
+  }
+  document.getElementById('statsGrid').innerHTML=`
+    <div class="stat-box"><div class="stat-n">${sessionClips.length}</div><div class="stat-l">Sonidos</div></div>
+    <div class="stat-box"><div class="stat-n">${pct}%</div><div class="stat-l">¡Lo logré!</div></div>
+    <div class="stat-box"><div class="stat-n">${S.sessions}</div><div class="stat-l">Sesiones</div></div>
+  `;
+  goScreen('celebration');
+  launchConfetti();
+}
+
+function launchConfetti(){
+  const canvas=document.getElementById('confetti');
+  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+  const ctx=canvas.getContext('2d');
+  const cols=['#FF6B6B','#FFD166','#1DD1A1','#5F27CD','#48DBFB','#FF9FF3','#FF9F43'];
+  const pieces=Array.from({length:100},()=>({
+    x:Math.random()*canvas.width,y:-20,
+    vx:(Math.random()-0.5)*5,vy:2+Math.random()*4,
+    color:cols[Math.floor(Math.random()*cols.length)],
+    size:6+Math.random()*10,rot:Math.random()*360,vrot:(Math.random()-0.5)*10,alive:true
+  }));
+  let frame=0;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p=>{
+      if(!p.alive)return;
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle=p.color;ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*0.6);
+      ctx.restore();
+      p.x+=p.vx;p.y+=p.vy;p.rot+=p.vrot;
+      if(p.y>canvas.height+20)p.alive=false;
+    });
+    frame++;
+    if(frame<250)requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  draw();
+}
+
+// ============================================================
+// CARGA DE VÍDEOS A INDEXEDDB
+// ============================================================
+const ALL_KEYS = [];
+LEVELS.forEach(lv=>{
+  lv.clips.forEach(c=>ALL_KEYS.push(c.key));
+  if(lv.transition) ALL_KEYS.push(lv.transition.key);
+});
+
+async function loadVideos(input){
+  const files=Array.from(input.files);
+  if(!files.length)return;
+  const status=document.getElementById('loadStatus');
+  status.textContent='⏳ Guardando vídeos en el iPad...';
+  let saved=0, notFound=[];
+  for(const file of files){
+    const nameNoExt=file.name.replace(/\.[^.]+$/,'');
+    if(ALL_KEYS.includes(nameNoExt)){
+      await saveVideoToDB(nameNoExt, file);
+      // Actualizar caché
+      if(videoURLCache[nameNoExt]){URL.revokeObjectURL(videoURLCache[nameNoExt]);delete videoURLCache[nameNoExt];}
+      saved++;
+    }
+  }
+  notFound=ALL_KEYS.filter(k=>!files.some(f=>f.name.replace(/\.[^.]+$/,'')=== k));
+  const count=await countVideosInDB();
+  status.innerHTML=`✅ ${saved} nuevos guardados<br>📦 ${count} vídeos en total en el iPad${notFound.length?`<br>⚠️ Faltan: ${notFound.slice(0,5).join(', ')}${notFound.length>5?'...':''}` :''}`;
+  updateDBStatus();
+  input.value='';
+}
+
+async function updateDBStatus(){
+  const count=await countVideosInDB();
+  const el=document.getElementById('dbStatus');
+  if(count>0){
+    el.className='db-status ok';
+    el.textContent=`✅ ${count} vídeos guardados en este iPad`;
+  } else {
+    el.className='db-status empty';
+    el.textContent='⚠️ No hay vídeos guardados todavía';
+  }
+}
+
+// ============================================================
+// ADMIN
+// ============================================================
+function renderAdmin(){
+  updateDBStatus();
+  // Levels
+  const grid=document.getElementById('levelGrid');
+  grid.innerHTML='';
+  LEVELS.forEach(lv=>{
+    const unlocked=S.unlockedLevels.includes(lv.id);
+    const row=document.createElement('div');
+    row.className='level-row';
+    row.innerHTML=`
+      <div>
+        <div class="lr-name">${lv.emoji} ${lv.name}: La ${lv.consonant}</div>
+        <div class="lr-status">${unlocked?'✅ Desbloqueado':'🔒 Bloqueado'}</div>
+      </div>
+      <button class="toggle-level ${unlocked?'on':'off'}" onclick="toggleLevel(${lv.id})">
+        ${unlocked?'Bloquear':'Desbloquear'}
+      </button>`;
+    grid.appendChild(row);
+  });
+  // Progress
+  const pb=document.getElementById('progressBadges');
+  pb.innerHTML='';
+  LEVELS.forEach(lv=>{
+    lv.clips.forEach(c=>{
+      const p=S.progress[c.key]||{attempts:[]};
+      const good=(p.attempts||[]).filter(a=>a==='good').length;
+      const badge=document.createElement('span');
+      badge.className=`ph-badge ${good>=5?'mastered':good>=2?'learning':'pending'}`;
+      badge.textContent=`${c.label}${good>=5?' ✓':''}`;
+      badge.title=`${c.key}: ${good} éxitos`;
+      pb.appendChild(badge);
+    });
+  });
+  document.getElementById('adminSessions').textContent=S.sessions||0;
+  document.getElementById('adminStreak').textContent=S.streak||0;
+}
+
+function toggleLevel(id){
+  const idx=S.unlockedLevels.indexOf(id);
+  if(idx>=0){if(S.unlockedLevels.length>1)S.unlockedLevels.splice(idx,1);}
+  else{S.unlockedLevels.push(id);S.unlockedLevels.sort();}
+  if(!S.unlockedLevels.includes(S.currentLevel)) S.currentLevel=S.unlockedLevels[0];
+  saveState();renderAdmin();
+}
+
+async function confirmReset(){
+  if(confirm('¿Seguro que quieres borrar todo el progreso de Claudia?\n(Los vídeos guardados NO se borran)')){
+    S={sessions:0,streak:0,currentLevel:1,unlockedLevels:[1],progress:{},lastDate:null};
+    saveState();renderAdmin();renderHome();
+  }
+}
+
+// ============================================================
+// ARRANQUE
+// ============================================================
+async function init(){
+  await openDB();
+  renderHome();
+  // Service Worker
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  }
+}
+init();
+</script>
+</body>
+</html>
