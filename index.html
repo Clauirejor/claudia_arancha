@@ -418,14 +418,34 @@ async function renderPhoneme(){
   sessionClips.forEach((c,i)=>{const b=document.createElement('button');b.className=`ph-nav-btn ${i<sessionClipIdx?'done':i===sessionClipIdx?'active':''}`;b.textContent=c.label;b.onclick=()=>{sessionClipIdx=i;renderPhoneme();};nav.appendChild(b);});
   const va=document.getElementById('videoArea');va.innerHTML='<div style="font-size:32px;">⏳</div>';
   const url=await getVideoURL(clip.key);
-  if(url){va.innerHTML=`<video src="${url}" controls playsinline webkit-playsinline autoplay style="width:100%;border-radius:14px;" preload="auto"></video>`;}
+  if(url){
+    va.innerHTML=`
+      <video id="mainVideo" src="${url}" playsinline webkit-playsinline autoplay
+        style="width:100%;border-radius:14px;display:block;" preload="auto"></video>
+      <div style="display:flex;gap:10px;padding:8px 4px 2px;width:100%;">
+        <button id="btnPlay" onclick="togglePlay()"
+          style="flex:1;background:linear-gradient(135deg,#5F27CD,#8B5CF6);color:white;border:none;padding:13px;border-radius:12px;font-family:'Baloo 2',cursive;font-size:18px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 #3D1A8A;">
+          ⏸ Pausa
+        </button>
+        <button onclick="replayVideo()"
+          style="flex:1;background:linear-gradient(135deg,#FF9F43,#FFAB00);color:white;border:none;padding:13px;border-radius:12px;font-family:'Baloo 2',cursive;font-size:18px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 #CC7A22;">
+          🔁 Repetir
+        </button>
+      </div>`;
+    const vid=document.getElementById('mainVideo');
+    vid.onended=()=>{const b=document.getElementById('btnPlay');if(b)b.textContent='▶ Play';};
+    vid.onplay=()=>{const b=document.getElementById('btnPlay');if(b)b.textContent='⏸ Pausa';};
+    vid.onpause=()=>{const b=document.getElementById('btnPlay');if(b)b.textContent='▶ Play';};
+  }
   else{va.innerHTML=`<div class="video-placeholder"><div style="font-size:48px;">🎬</div><p>${clip.key}.mp4</p><button class="btn-load-video" onclick="goAdmin()">Cargar en ajustes</button></div>`;}
   if(!S.progress[clip.key])S.progress[clip.key]={good:0,repeat:0,attempts:[]};
   renderDots(clip.key);
 }
 function renderDots(key){const p=S.progress[key]||{attempts:[]};const row=document.getElementById('attemptsDots');row.innerHTML='';for(let i=0;i<5;i++){const d=document.createElement('div');d.className='adot'+(p.attempts[i]==='good'?' good':p.attempts[i]==='repeat'?' repeat':'');row.appendChild(d);}}
 function markGood(){const clip=sessionClips[sessionClipIdx];if(!S.progress[clip.key])S.progress[clip.key]={good:0,repeat:0,attempts:[]};S.progress[clip.key].attempts.push('good');S.progress[clip.key].good++;goodTotal++;attemptTotal++;saveState();renderDots(clip.key);const gc=S.progress[clip.key].attempts.filter(a=>a==='good').length;if(gc>=3){setTimeout(()=>{sessionClipIdx++;if(sessionClipIdx>=sessionClips.length&&currentLevel.transition)showTransition();else renderPhoneme();},600);}}
-function markRepeat(){const clip=sessionClips[sessionClipIdx];if(!S.progress[clip.key])S.progress[clip.key]={good:0,repeat:0,attempts:[]};S.progress[clip.key].attempts.push('repeat');S.progress[clip.key].repeat++;attemptTotal++;saveState();renderDots(clip.key);const v=document.querySelector('#videoArea video');if(v){v.currentTime=0;v.play();}}
+function togglePlay(){const v=document.getElementById('mainVideo');if(!v)return;v.paused?v.play():v.pause();}
+function replayVideo(){const v=document.getElementById('mainVideo');if(!v)return;v.currentTime=0;v.play();}
+function markRepeat(){const clip=sessionClips[sessionClipIdx];if(!S.progress[clip.key])S.progress[clip.key]={good:0,repeat:0,attempts:[]};S.progress[clip.key].attempts.push('repeat');S.progress[clip.key].repeat++;attemptTotal++;saveState();renderDots(clip.key);replayVideo();}
 
 async function showTransition(){const trans=currentLevel.transition;if(!trans){showCelebration();return;}document.getElementById('transEmoji').textContent=trans.emoji;document.getElementById('transTitle').textContent='¡Nivel completado! 🎉';document.getElementById('transSub').textContent=`Ahora vamos con ${trans.toName}`;const vw=document.getElementById('transVideoWrap'),tv=document.getElementById('transVideo'),url=await getVideoURL(trans.key);if(url){tv.src=url;vw.style.display='block';tv.play();tv.onended=()=>setTimeout(finishTransition,800);}else{vw.style.display='none';}document.getElementById('transOverlay').classList.add('show');}
 function finishTransition(){document.getElementById('transOverlay').classList.remove('show');const tv=document.getElementById('transVideo');tv.pause();tv.src='';showCelebration();}
