@@ -250,8 +250,17 @@ canvas#confetti{position:fixed;top:0;left:0;pointer-events:none;z-index:0;}
     <div class="ph-nav" id="phNav"></div>
   </div>
   <div class="ph-card">
-    <div class="ph-sublabel" id="phSublabel">Escucha y repite</div>
-    <div class="ph-big" id="phBig">PA</div>
+    <!-- Fonema + imagen lado a lado -->
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;">
+      <div style="flex:1;text-align:left;">
+        <div class="ph-sublabel" id="phSublabel">pato</div>
+        <div class="ph-big" id="phBig" style="font-size:80px;">PA</div>
+      </div>
+      <div id="wordImage" style="width:110px;height:110px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+        <!-- imagen o emoji de fallback -->
+      </div>
+    </div>
+    <!-- Vídeo -->
     <div class="video-area" id="videoArea">
       <div class="video-placeholder">
         <div style="font-size:48px;">🎬</div>
@@ -259,11 +268,23 @@ canvas#confetti{position:fixed;top:0;left:0;pointer-events:none;z-index:0;}
         <button class="btn-load-video" onclick="goAdmin()">Cargar en ajustes</button>
       </div>
     </div>
-    <div class="feedback-row">
-      <button class="btn-bien" onclick="markGood()">✅ ¡Lo hice!</button>
-      <button class="btn-repetir" onclick="markRepeat()">🔄 Repetir</button>
+    <!-- Botones de control de vídeo -->
+    <div style="display:flex;gap:10px;margin-top:10px;">
+      <button id="btnPlay" onclick="togglePlay()"
+        style="flex:1;background:linear-gradient(135deg,#5F27CD,#8B5CF6);color:white;border:none;padding:13px;border-radius:12px;font-family:'Baloo 2',cursive;font-size:18px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 #3D1A8A;">
+        ▶ Play
+      </button>
+      <button onclick="replayVideo()"
+        style="flex:1;background:linear-gradient(135deg,#FF9F43,#FFAB00);color:white;border:none;padding:13px;border-radius:12px;font-family:'Baloo 2',cursive;font-size:18px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 #CC7A22;">
+        🔁 Repetir
+      </button>
     </div>
-    <div class="attempts-dots" id="attemptsDots"></div>
+    <!-- Botón verde único -->
+    <button onclick="markGood()"
+      style="width:100%;margin-top:12px;background:linear-gradient(135deg,#1DD1A1,#26de81);color:white;border:none;padding:20px;border-radius:16px;font-family:'Baloo 2',cursive;font-size:24px;font-weight:900;cursor:pointer;box-shadow:0 6px 0 #0FAB80;transition:all 0.15s;letter-spacing:1px;">
+      ✅ ¡Lo he dicho!
+    </button>
+    <div class="attempts-dots" id="attemptsDots" style="margin-top:14px;"></div>
   </div>
 </div>
 
@@ -305,22 +326,22 @@ canvas#confetti{position:fixed;top:0;left:0;pointer-events:none;z-index:0;}
 <script>
 const LEVELS=[
   {id:1,name:"Nivel 1",consonant:"P",color:"#FF6B6B",colorD:"#CC4444",colorL:"#FFE8E8",emoji:"👄",
-   clips:[{key:"PA_pato",label:"PA",word:"pato"},{key:"PE_pelo",label:"PE",word:"pelo"},{key:"PI_pie",label:"PI",word:"pie"},{key:"PO_polo",label:"PO",word:"polo"},{key:"PU_puerta",label:"PU",word:"puerta"},{key:"P_frase",label:"Frase",word:"Pepe pone pan en el plato",isFrase:true}],
+   clips:[{key:"PA_pato",label:"PA",word:"pato",emoji:"🦆"},{key:"PE_pelo",label:"PE",word:"pelo",emoji:"💇"},{key:"PI_pie",label:"PI",word:"pie",emoji:"🦶"},{key:"PO_polo",label:"PO",word:"polo",emoji:"🏒"},{key:"PU_puerta",label:"PU",word:"puerta",emoji:"🚪"},{key:"P_frase",label:"Frase",word:"Pepe pone pan en el plato",isFrase:true}],
    transition:{key:"transicion_M",toName:"la M",emoji:"🎊"}},
   {id:2,name:"Nivel 2",consonant:"M",color:"#FF9F43",colorD:"#CC7A22",colorL:"#FFF3E0",emoji:"👅",
-   clips:[{key:"MA_mama",label:"MA",word:"mamá"},{key:"ME_mesa",label:"ME",word:"mesa"},{key:"MI_mio",label:"MI",word:"mío"},{key:"MO_mono",label:"MO",word:"mono"},{key:"MU_mula",label:"MU",word:"mula"},{key:"M_frase",label:"Frase",word:"Emi me mima más a mí",isFrase:true}],
+   clips:[{key:"MA_mama",label:"MA",word:"mamá",emoji:"👩"},{key:"ME_mesa",label:"ME",word:"mesa",emoji:"🪑"},{key:"MI_mio",label:"MI",word:"mío",emoji:"🙋"},{key:"MO_mono",label:"MO",word:"mono",emoji:"🐒"},{key:"MU_mula",label:"MU",word:"mula",emoji:"🫏"},{key:"M_frase",label:"Frase",word:"Emi me mima más a mí",isFrase:true}],
    transition:{key:"transicion_B",toName:"la B",emoji:"🌟"}},
   {id:3,name:"Nivel 3",consonant:"B",color:"#48DBFB",colorD:"#20A8C5",colorL:"#E0F9FF",emoji:"💋",
-   clips:[{key:"BA_bata",label:"BA",word:"bata"},{key:"BE_beso",label:"BE",word:"beso"},{key:"BI_bien",label:"BI",word:"bien"},{key:"BO_bola",label:"BO",word:"bola"},{key:"BU_bueno",label:"BU",word:"bueno"},{key:"B_frase",label:"Frase",word:"Bea bebe batido de bombón",isFrase:true}],
+   clips:[{key:"BA_bata",label:"BA",word:"bata",emoji:"🥼"},{key:"BE_beso",label:"BE",word:"beso",emoji:"😘"},{key:"BI_bien",label:"BI",word:"bien",emoji:"👍"},{key:"BO_bola",label:"BO",word:"bola",emoji:"⚽"},{key:"BU_bueno",label:"BU",word:"bueno",emoji:"🌟"},{key:"B_frase",label:"Frase",word:"Bea bebe batido de bombón",isFrase:true}],
    transition:{key:"transicion_Z",toName:"la Z/C",emoji:"⭐"}},
   {id:4,name:"Nivel 4",consonant:"Z/C",color:"#1DD1A1",colorD:"#0FAB80",colorL:"#E0FFF7",emoji:"🦋",
-   clips:[{key:"ZA_zapato",label:"ZA",word:"zapato"},{key:"CE_cena",label:"CE",word:"cena"},{key:"CI_cielo",label:"CI",word:"cielo"},{key:"ZO_zoo",label:"ZO",word:"zoo"},{key:"ZU_zumo",label:"ZU",word:"zumo"},{key:"Z_frase",label:"Frase",word:"Celia tiene cien zapatos azules",isFrase:true}],
+   clips:[{key:"ZA_zapato",label:"ZA",word:"zapato",emoji:"👟"},{key:"CE_cena",label:"CE",word:"cena",emoji:"🍽️"},{key:"CI_cielo",label:"CI",word:"cielo",emoji:"☁️"},{key:"ZO_zoo",label:"ZO",word:"zoo",emoji:"🦁"},{key:"ZU_zumo",label:"ZU",word:"zumo",emoji:"🧃"},{key:"Z_frase",label:"Frase",word:"Celia tiene cien zapatos azules",isFrase:true}],
    transition:{key:"transicion_S",toName:"la S",emoji:"🎉"}},
   {id:5,name:"Nivel 5",consonant:"S directa",color:"#5F27CD",colorD:"#3D1A8A",colorL:"#EDE7FF",emoji:"🌈",
-   clips:[{key:"SA_sapo",label:"SA",word:"sapo"},{key:"SE_seta",label:"SE",word:"seta"},{key:"SI_silla",label:"SI",word:"silla"},{key:"SO_sopa",label:"SO",word:"sopa"},{key:"SU_suelo",label:"SU",word:"suelo"},{key:"S_frase",label:"Frase",word:"Susi sabe saltar sola",isFrase:true}],
+   clips:[{key:"SA_sapo",label:"SA",word:"sapo",emoji:"🐸"},{key:"SE_seta",label:"SE",word:"seta",emoji:"🍄"},{key:"SI_silla",label:"SI",word:"silla",emoji:"🪑"},{key:"SO_sopa",label:"SO",word:"sopa",emoji:"🍲"},{key:"SU_suelo",label:"SU",word:"suelo",emoji:"🏠"},{key:"S_frase",label:"Frase",word:"Susi sabe saltar sola",isFrase:true}],
    transition:{key:"transicion_Sinv",toName:"la S inversa",emoji:"🏆"}},
   {id:6,name:"Nivel 6",consonant:"S inversa",color:"#FF9FF3",colorD:"#CC6DC0",colorL:"#FFE8FD",emoji:"🎤",
-   clips:[{key:"S_inv_mas",label:"más",word:"más"},{key:"S_inv_mes",label:"mes",word:"mes"},{key:"S_inv_isla",label:"isla",word:"isla"},{key:"S_inv_tos",label:"tos",word:"tos"},{key:"S_inv_autobus",label:"autobús",word:"autobús"},{key:"S_inv_frase",label:"Frase",word:"La espada está en la isla",isFrase:true}],
+   clips:[{key:"S_inv_mas",label:"más",word:"más",emoji:"➕"},{key:"S_inv_mes",label:"mes",word:"mes",emoji:"📅"},{key:"S_inv_isla",label:"isla",word:"isla",emoji:"🏝️"},{key:"S_inv_tos",label:"tos",word:"tos",emoji:"🤧"},{key:"S_inv_autobus",label:"autobús",word:"autobús",emoji:"🚌"},{key:"S_inv_frase",label:"Frase",word:"La espada está en la isla",isFrase:true}],
    transition:null},
 ];
 const EXERCISES_DB=[
@@ -414,35 +435,60 @@ async function renderPhoneme(){
   document.getElementById('phProg').style.width=`${(sessionClipIdx/total)*100}%`;
   document.getElementById('phBig').textContent=clip.label;document.getElementById('phBig').style.color=lv.color;
   document.getElementById('phSublabel').textContent=clip.isFrase?`"${clip.word}"`:clip.word;
+
+  // Imagen de la palabra (solo si no es frase)
+  const imgBox=document.getElementById('wordImage');
+  if(!clip.isFrase && clip.key){
+    const imgUrl=`imagenes/${clip.key}.png`;
+    imgBox.innerHTML=`<img src="${imgUrl}" alt="${clip.word}"
+      style="width:110px;height:110px;object-fit:contain;border-radius:16px;"
+      onerror="this.parentNode.innerHTML='<div style=\'font-size:64px;line-height:1;\'>${clip.emoji||''}</div>'">`;
+  } else {
+    imgBox.innerHTML='';
+  }
+
+  // Nav
   const nav=document.getElementById('phNav');nav.innerHTML='';
   sessionClips.forEach((c,i)=>{const b=document.createElement('button');b.className=`ph-nav-btn ${i<sessionClipIdx?'done':i===sessionClipIdx?'active':''}`;b.textContent=c.label;b.onclick=()=>{sessionClipIdx=i;renderPhoneme();};nav.appendChild(b);});
+
+  // Vídeo
   const va=document.getElementById('videoArea');va.innerHTML='<div style="font-size:32px;">⏳</div>';
   const url=await getVideoURL(clip.key);
   if(url){
-    va.innerHTML=`
-      <video id="mainVideo" src="${url}" playsinline webkit-playsinline autoplay
-        style="width:100%;border-radius:14px;display:block;" preload="auto"></video>
-      <div style="display:flex;gap:10px;padding:8px 4px 2px;width:100%;">
-        <button id="btnPlay" onclick="togglePlay()"
-          style="flex:1;background:linear-gradient(135deg,#5F27CD,#8B5CF6);color:white;border:none;padding:13px;border-radius:12px;font-family:'Baloo 2',cursive;font-size:18px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 #3D1A8A;">
-          ⏸ Pausa
-        </button>
-        <button onclick="replayVideo()"
-          style="flex:1;background:linear-gradient(135deg,#FF9F43,#FFAB00);color:white;border:none;padding:13px;border-radius:12px;font-family:'Baloo 2',cursive;font-size:18px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 #CC7A22;">
-          🔁 Repetir
-        </button>
-      </div>`;
+    va.innerHTML=`<video id="mainVideo" src="${url}" playsinline webkit-playsinline autoplay
+      style="width:100%;border-radius:14px;display:block;" preload="auto"></video>`;
     const vid=document.getElementById('mainVideo');
     vid.onended=()=>{const b=document.getElementById('btnPlay');if(b)b.textContent='▶ Play';};
     vid.onplay=()=>{const b=document.getElementById('btnPlay');if(b)b.textContent='⏸ Pausa';};
     vid.onpause=()=>{const b=document.getElementById('btnPlay');if(b)b.textContent='▶ Play';};
+  } else {
+    va.innerHTML=`<div class="video-placeholder"><div style="font-size:48px;">🎬</div><p>${clip.key}.mp4</p><button class="btn-load-video" onclick="goAdmin()">Cargar en ajustes</button></div>`;
   }
-  else{va.innerHTML=`<div class="video-placeholder"><div style="font-size:48px;">🎬</div><p>${clip.key}.mp4</p><button class="btn-load-video" onclick="goAdmin()">Cargar en ajustes</button></div>`;}
+
+  // Reset contador de intentos para este clip
   if(!S.progress[clip.key])S.progress[clip.key]={good:0,repeat:0,attempts:[]};
   renderDots(clip.key);
 }
 function renderDots(key){const p=S.progress[key]||{attempts:[]};const row=document.getElementById('attemptsDots');row.innerHTML='';for(let i=0;i<5;i++){const d=document.createElement('div');d.className='adot'+(p.attempts[i]==='good'?' good':p.attempts[i]==='repeat'?' repeat':'');row.appendChild(d);}}
-function markGood(){const clip=sessionClips[sessionClipIdx];if(!S.progress[clip.key])S.progress[clip.key]={good:0,repeat:0,attempts:[]};S.progress[clip.key].attempts.push('good');S.progress[clip.key].good++;goodTotal++;attemptTotal++;saveState();renderDots(clip.key);const gc=S.progress[clip.key].attempts.filter(a=>a==='good').length;if(gc>=3){setTimeout(()=>{sessionClipIdx++;if(sessionClipIdx>=sessionClips.length&&currentLevel.transition)showTransition();else renderPhoneme();},600);}}
+function markGood(){
+  const clip=sessionClips[sessionClipIdx];
+  if(!S.progress[clip.key])S.progress[clip.key]={good:0,repeat:0,attempts:[]};
+  S.progress[clip.key].attempts.push('good');
+  S.progress[clip.key].good++;
+  goodTotal++;attemptTotal++;
+  saveState();renderDots(clip.key);
+  const gc=S.progress[clip.key].attempts.filter(a=>a==='good').length;
+  if(gc>=5){
+    setTimeout(()=>{
+      sessionClipIdx++;
+      if(sessionClipIdx>=sessionClips.length&&currentLevel.transition)showTransition();
+      else renderPhoneme();
+    },600);
+  } else {
+    // Reproduce el vídeo de nuevo para el siguiente intento
+    replayVideo();
+  }
+}
 function togglePlay(){const v=document.getElementById('mainVideo');if(!v)return;v.paused?v.play():v.pause();}
 function replayVideo(){const v=document.getElementById('mainVideo');if(!v)return;v.currentTime=0;v.play();}
 function markRepeat(){const clip=sessionClips[sessionClipIdx];if(!S.progress[clip.key])S.progress[clip.key]={good:0,repeat:0,attempts:[]};S.progress[clip.key].attempts.push('repeat');S.progress[clip.key].repeat++;attemptTotal++;saveState();renderDots(clip.key);replayVideo();}
